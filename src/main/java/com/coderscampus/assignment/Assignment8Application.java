@@ -1,8 +1,5 @@
 package com.coderscampus.assignment;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -10,29 +7,19 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Assignment8Application {
     public static void main(String[] args) {
-        // Step 1 Asynchronous data fetching
-        // The solution to synchronous programming is Multi-threading
-        // Thread pool-ExecutorService to manage threads-Concurrent Calls
-        // Thread-safe counting-AtomicInteger will track frequencies
-        // 1 initialize thread pool - ExecutorService - executors
-        // 2 submit tasks - List - ArrayLists - futures
-        // 3 wait for completion - for loop
-
-        // Step 2 - count number of frequencies - count iterations - output
-        // 1 Thread-safe counter - AtomicInteger - into Array - for loop
-        // 2 Process each task - for loop
-        // 3 Print results - Syso-result
-
+        // Creates object
         Assignment8 assignment = new Assignment8();
-
-        // Initialize counters for numbers 0-14
-        AtomicInteger[] counts = new AtomicInteger[15];
-        for (int i = 0; i < 15; i++) {
-            counts[i] = new AtomicInteger(0);
-        }
+        // Creates a new AtomicInteger instance - counters
+        // Creates a range of Integers - maps each integer
+        // Collects Integers into an Array (0 - 14)
+        AtomicInteger[] counts = IntStream.range(0, 15)                                     // Step 1: Create range
+                                          .mapToObj(i -> new AtomicInteger(0))    // Step 2: Map to objects
+                                          .toArray(AtomicInteger[]::new);                   // Step 3: Convert to array
 
         // Thread pool with 200 threads at a time (Concurrently)
         ExecutorService executor = Executors.newFixedThreadPool(200);
@@ -41,37 +28,33 @@ public class Assignment8Application {
         List<Future<?>> futures = new ArrayList<>();
         for (int i = 0; i < 1000; i++) {
             futures.add(executor.submit(() -> {
-                List<Integer> tasks = assignment.getNumbers();
-                for (Integer number : tasks) {
-                    if (number >= 0 && number <= 14) {
-                        counts[number].incrementAndGet(); // keeps breaking here
-                    }
-                }
+                List<Integer> numbers = assignment.getNumbers();
+                numbers.stream()
+                       .filter(n -> n >= 0 && n < 15) // 0-14
+                       .forEach(n -> counts[n].incrementAndGet());
             }));
         }
 
         // Wait for tasks to complete
-        for (Future<?> future : futures) {
+        futures.forEach(future -> { // Sexy for loop
             try {
-                future.get(); // breaks here
+                future.get(); // No longer breaks here
             } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
+                        System.err.println("Task error: " + e.getMessage());
             }
-        }
+        });
         executor.shutdown();
 
-        // Build and print results
-        StringBuilder result = new StringBuilder();
-        for (int i = 0; i < 15; i++) {
-            result.append(i).append("=").append(counts[i].get());
-            if (i < 15) result.append(", ");
-        }
+        // Build and print results with stream
+        String result = IntStream.range(0, 15)
+                                 .mapToObj(i -> i + "=" + counts[i].get())
+                                 .collect(Collectors.joining(", "));
         System.out.println(result);
 
-        int totalCount = 0;
-        for (int i = 0; i < 15; i++) {
-            totalCount += counts[i].get();
-        }
-        System.out.println("Total numbers processed: " + totalCount);
+        // Counts and prints all tasks after all other processing!!!
+        int totalCount = IntStream.range(0, 15) // Creates a stream of Integers
+                                  .map(i -> counts[i].get()) // Maps each index into the count value and .get() calls on the AtomicInteger method to retrieve the integers value
+                                  .sum(); // Sums up all the Integers in the stream
+        System.out.println("Total numbers processed: " + totalCount); // Final print out with sum
     }
 }
