@@ -23,7 +23,7 @@ public class Assignment8Application {
             futures.add(executor.submit(() -> {
                 List<Integer> numbers = assignment.getNumbers();
                 numbers.stream()
-                       .filter(n -> n >= 0 && n < 15) // 0-14
+                       .filter(n -> n >= 0 && n < 15) 
                        .forEach(n -> counts[n].incrementAndGet());
             }));
         }
