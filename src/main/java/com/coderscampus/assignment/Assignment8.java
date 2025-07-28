@@ -17,6 +17,7 @@ public class Assignment8 {
         try {
             // Make sure you download the output.txt file for Assignment 8
             // and place the file in the root of your Java project
+            // The constructor reads output.txt and stores integers into numbers (an ArrayList)
             numbers = Files.readAllLines(Paths.get("output.txt"))
                     .stream()
                     .map(n -> Integer.parseInt(n))
@@ -34,6 +35,10 @@ public class Assignment8 {
      * 
      * @return Integers from the parsed txt file, 1,000 numbers at a time
      */
+    // getNumbers method: Returns 1,000 integers at a time
+    // (total of 1,000 calls needed for 1,000,000 numbers)
+    // Uses synchronized block to safely increment indices (i)
+    // Stimulates network delay with thread.sleep(500) + prints out
     public List<Integer> getNumbers() {
         int start, end;
         synchronized (i) {
@@ -52,7 +57,7 @@ public class Assignment8 {
         List<Integer> newList = new ArrayList<>();
         IntStream.range(start, end)
                 .forEach(n -> {
-                    newList.add(numbers.get(n));
+                    newList.add(numbers.get(n));// breaks here
                 });
         System.out.println("Done Fetching records " + start + " to " + (end));
         return newList;
