@@ -1,6 +1,6 @@
 package com.coderscampus.assignment;
 
-import java.io.IOException;
+import java.io.IOException; 
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -57,7 +57,7 @@ public class Assignment8 {
         List<Integer> newList = new ArrayList<>();
         IntStream.range(start, end)
                 .forEach(n -> {
-                    newList.add(numbers.get(n));// breaks here
+                    newList.add(numbers.get(n));
                 });
         System.out.println("Done Fetching records " + start + " to " + (end));
         return newList;

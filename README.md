@@ -1,22 +1,55 @@
-# Assignment 8 starter
+# Concurrent Number Processor
 
+A Java application that processes 1 million numbers concurrently from a file, counts occurrences, and prints results.
 
-This project is a maven project and slightly different than some previous projects because of that.
+## Overview
 
-## Request For Feedback
+This system demonstrates:
+- Multi-threaded batch processing
+- Thread-safe aggregation using `ConcurrentHashMap` and `AtomicInteger`
+- Simulated API latency handling
 
-This project is released in beta. Please slack Pete directly, if you have any difficulties using this project in it's current state.
+## Components
 
-## Installation
+### `Assignment8Application`
+- Entry point
+- Creates service, triggers processing, and shuts down
 
-To use this template:
+### `Assignment8Service`
+Core processing logic:
+1. Manages thread pool (200 threads)
+2. Coordinates concurrent tasks
+3. Aggregates results
+4. Prints sorted output
 
-- Click on the green `Use this template` button.
+### `Assignment8`
+Data access layer:
+- Reads `output.txt` (1M numbers)
+- Provides numbers in batches of 1,000
+- Simulates network latency (500ms delay)
 
-- Name your new project `Assignment8` when you are choosing a name.
+## How It Works
 
-- This will create a repository on github for your assignment. Clone this remote repository down to your local computer, as you would clone any other repository. Place it on your computer in the same folder as your other coderscampus assignments.
+1. **Initialization**:
+    - Loads 1,000,000 numbers from `output.txt`
 
-- `Import` this an Eclipse project as an `Existing Maven Project`.
+2. **Processing**:
+    - Creates 1,000 tasks (1 per batch)
+    - Each thread:
+        - Fetches 1,000 numbers
+        - Counts occurrences
+    - Thread-safe aggregation via `ConcurrentHashMap`
 
-- Continue the Assignment8 per the Assignment5 course video.
+3. **Output**:
+    - Prints each number and its count (sorted)
+    - Shows total processed count (should be 1,000,000)
+
+## Requirements
+
+- Java 8+
+- `output.txt` in project root containing 1M integers
+
+## Performance Notes
+
+- Processes all data in ~3 seconds (500ms × 1000 batches / 200 threads)
+- Thread-safe design prevents race conditions
